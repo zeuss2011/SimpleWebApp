@@ -1,0 +1,69 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleWebAppKatana", "SimpleWebAppKatana\SimpleWebAppKatana.csproj", "{06B03B31-9826-41A9-B4CB-FC1165A43BDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleWebAppKatanaTest", "SimpleWebAppKatanaTest\SimpleWebAppKatanaTest.csproj", "{A313613B-FE7D-4956-8717-8DFF113463B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppWithAuthentification", "WebAppWithAuthentification\WebAppWithAuthentification.csproj", "{3024B994-5DA2-4330-867A-1F38FEAF504E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleWebApp.Common", "SimpleWebApp.Common\SimpleWebApp.Common.csproj", "{C6845A71-8549-4A2B-848F-196B44D043E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleWebApp.Data", "SimpleWebApp.Data\SimpleWebApp.Data.csproj", "{40890936-7E30-4439-BF55-37E9871F2B61}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SimpleWebApp.Database", "SimpleWebApp.Database\SimpleWebApp.Database.sqlproj", "{A968AB76-8168-4656-8879-18477854A389}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleWebApp.Services", "SimpleWebApp.Services\SimpleWebApp.Services.csproj", "{7E234C85-8CE9-470F-BFE2-4526C72ACD36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleWebApp.WebServices", "SimpleWebApp.WebServices\SimpleWebApp.WebServices.csproj", "{FB1DB734-2333-430E-B816-0FA687015902}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06B03B31-9826-41A9-B4CB-FC1165A43BDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06B03B31-9826-41A9-B4CB-FC1165A43BDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06B03B31-9826-41A9-B4CB-FC1165A43BDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06B03B31-9826-41A9-B4CB-FC1165A43BDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A313613B-FE7D-4956-8717-8DFF113463B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A313613B-FE7D-4956-8717-8DFF113463B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A313613B-FE7D-4956-8717-8DFF113463B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A313613B-FE7D-4956-8717-8DFF113463B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3024B994-5DA2-4330-867A-1F38FEAF504E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3024B994-5DA2-4330-867A-1F38FEAF504E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3024B994-5DA2-4330-867A-1F38FEAF504E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3024B994-5DA2-4330-867A-1F38FEAF504E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6845A71-8549-4A2B-848F-196B44D043E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6845A71-8549-4A2B-848F-196B44D043E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6845A71-8549-4A2B-848F-196B44D043E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6845A71-8549-4A2B-848F-196B44D043E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40890936-7E30-4439-BF55-37E9871F2B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40890936-7E30-4439-BF55-37E9871F2B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40890936-7E30-4439-BF55-37E9871F2B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40890936-7E30-4439-BF55-37E9871F2B61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A968AB76-8168-4656-8879-18477854A389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A968AB76-8168-4656-8879-18477854A389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A968AB76-8168-4656-8879-18477854A389}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A968AB76-8168-4656-8879-18477854A389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A968AB76-8168-4656-8879-18477854A389}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A968AB76-8168-4656-8879-18477854A389}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{7E234C85-8CE9-470F-BFE2-4526C72ACD36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E234C85-8CE9-470F-BFE2-4526C72ACD36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E234C85-8CE9-470F-BFE2-4526C72ACD36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E234C85-8CE9-470F-BFE2-4526C72ACD36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB1DB734-2333-430E-B816-0FA687015902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB1DB734-2333-430E-B816-0FA687015902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB1DB734-2333-430E-B816-0FA687015902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB1DB734-2333-430E-B816-0FA687015902}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8;packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45
+	EndGlobalSection
+EndGlobal

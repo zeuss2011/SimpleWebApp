@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<root>
+
+    <using namespace="SimpleWebApp.Common"/>
+
+    <model edmxfile=".\..\SimpleWebApp.data\SimpleWebAppModel.edmx" wcfnamespace="SimpleWebApp"/>
+
+</root>

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--Fichier de configuration de la generation automatique dédié au context EF-->
+<root>
+
+    <using namespace="SimpleWebApp.Common"/>
+
+    <model edmxfile=".\..\SimpleWebApp.data\SimpleWebAppModel.edmx" wcfnamespace="SimpleWebApp"/>
+
+</root>

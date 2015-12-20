@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<root>
+
+    <namespace name="SimpleWebApp.Data"/>
+    <using namespace="SimpleWebApp.Common"/>
+
+    <DefaultType type="ARepository" />
+
+    <model edmxfile=".\..\SimpleWebApp.data\SimpleWebAppModel.edmx" entitiesconfig="../SimpleWebApp.Common/SimpleWebAppModelGenerator.xml" wcfnamespace="SimpleWebApp">
+    </model>
+
+</root>

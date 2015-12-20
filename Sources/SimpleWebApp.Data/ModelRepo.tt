@@ -1,0 +1,284 @@
+﻿<#
+    //    Netapsys 2012/2013
+    //    created by nan 15/10/2012 for Arquedi
+    //    -> mise en place des features de base, +begin wcf
+    //    used 24/04/2013 in Cristal 
+    //    -> wcf capabilities
+    //    remodified 24/06/2013 for Gepafo
+    //    -> ajout des fichiers repo et factorisation de l'id.
+    //    remasterized 1/07/2013 for Udssi
+    //    -> multi edmx & config externalisé
+#>
+<#@ template language="C#" debug="false" hostspecific="true"#>
+<#@ include file="EF.Utility.CS.ttinclude"#><#@
+ output extension=".cs"#><#
+
+    string absolutePath = Host.ResolvePath("ModelRepo.xml");
+    XDocument xdoc = XDocument.Load(absolutePath);
+
+    string defaultType = (from e in xdoc.Descendants("DefaultType") select e).First().Attribute("type").Value.ToString();
+
+    List<XElement> usingsConfig = (from e in xdoc.Descendants("using") select e).ToList();
+    List<XElement> modelsConfig = (from e in xdoc.Descendants("model") select e).ToList();
+
+    CodeGenerationTools code = new CodeGenerationTools(this);
+    MetadataLoader loader = new MetadataLoader(this);
+    CodeRegion region = new CodeRegion(this, 1);
+    MetadataTools ef = new MetadataTools(this);
+
+    string namespaceName = code.VsNamespaceSuggestion();
+
+    if (String.IsNullOrWhiteSpace(namespaceName))
+    {
+        namespaceName = (from e in xdoc.Descendants("namespace") select e).First().Attribute("name").Value.ToString();
+    }
+
+    EntityFrameworkTemplateFileManager fileManager = EntityFrameworkTemplateFileManager.Create(this);
+
+    foreach (XElement modelConfig in modelsConfig)
+    {
+        List<XElement> repoConfig = (from e in modelConfig.Descendants("entity") select e).ToList();
+
+        string configFilePath = Host.ResolvePath(modelConfig.Attribute("entitiesconfig").Value);
+        XDocument xdocEnt = XDocument.Load(configFilePath);
+        List<XElement> entitiesConfig = (from e in xdocEnt.Descendants("entity") select e).ToList();
+
+
+        string inputFile = (modelConfig.Attribute("edmxfile").Value);
+        EdmItemCollection ItemCollection = loader.CreateEdmItemCollection(inputFile);
+        EntityContainer container = ItemCollection.GetItems<EntityContainer>().FirstOrDefault();
+
+
+        foreach (var entity in ItemCollection.GetItems<EntityType>().OrderBy(e => e.Name))
+        {
+            XElement conf =
+                (from se in xdoc.Descendants("entity")
+                    where se.Attribute("name").Value.Equals(entity.ToString())
+                    select se).FirstOrDefault();
+
+            fileManager.StartNewFile("R" + entity.Name + ".cs");
+            WriteHeader(fileManager, usingsConfig);
+            BeginNamespace(namespaceName, code);
+
+            string elementType = "";
+
+            if (repoConfig.Exists(a => a.Attribute("name").Value.ToString() == entity.ToString()))
+            {
+                var element = repoConfig.First(a => a.Attribute("name").Value.ToString() == entity.ToString());
+                elementType = element.Attribute("type").Value;
+            }
+            else
+            {
+                elementType = defaultType;
+            }
+
+            var keyProperties =
+                entity.Properties.Where(
+                    p => p.TypeUsage.EdmType is PrimitiveType && p.DeclaringType == entity && ef.IsKey(p));
+            var primaryKeyType = code.Escape(keyProperties.First().TypeUsage);
+            var pkStr = code.Escape(keyProperties.First());
+            var interfaceByKey = "IRepository";
+            if (primaryKeyType.ToUpper() == "GUID" || primaryKeyType.ToUpper() == "SYSTEM.GUID")
+                interfaceByKey = "IRepositoryGuid";
+            if (primaryKeyType.ToUpper() == "STRING") interfaceByKey = "IRepositoryString";
+            if (primaryKeyType.ToUpper() == "DECIMAL") interfaceByKey = "IRepositoryDecimal";
+#>
+public partial class R<#=code.Escape(entity) #> : <#=elementType #><<#=code.Escape(entity) #>,<#=primaryKeyType #>> , <#=                interfaceByKey #><<#=                code.Escape(entity) #>>
+{
+<#
+		
+#>
+
+
+	#region Constructor(s)
+
+	public R<#=code.Escape(entity) #>(<#=code.Escape(container) #> context) : base(context){}
+
+	#endregion
+
+    #region Overrided Methods
+
+    public override <#=code.Escape(entity) #> GetById(<#=primaryKeyType #> id)
+    {
+        return Single(id);
+    }
+
+    #endregion
+
+<#
+
+            var primitiveProperties = entity.Properties.Where(p => p.TypeUsage.EdmType is PrimitiveType);
+            //primitiveProperties.AddAll(entity.BaseType.Properties.Where(p => p.TypeUsage.EdmType is PrimitiveType && p.DeclaringType == entity));
+            //var navigationProperties = entity.NavigationProperties.Where(np => np.DeclaringType == entity);
+            var navigationProperties = entity.NavigationProperties;
+
+#>
+	#region Mapping
+
+	protected override void Map(<#=                    code.Escape(entity) #> source, <#=                    code.Escape(entity) #> target){
+<#
+                foreach (var prim in primitiveProperties)
+                {
+                    if (prim.Name != "Id")
+                    {
+
+                        string PrimitiveFieldName = prim.Name;
+                        //PrimitiveFieldName = PrimitiveFieldName.Replace("Enum","Type");
+                        //PrimitiveFieldName = PrimitiveFieldName.Replace("Etat","Statut");
+#>
+		if(!Object.Equals(source.<#=                            code.Escape(PrimitiveFieldName) #>,target.<#=                            code.Escape(PrimitiveFieldName) #>)){
+			target.<#=                            code.Escape(PrimitiveFieldName) #> = source.<#=                            code.Escape(PrimitiveFieldName) #>;
+		}        
+<#
+                    }
+                }
+
+                string generatedEntityName = code.EscapeNamespace(namespaceName) + "." + code.Escape(entity);
+                XElement entityConfig =
+                    (from se in entitiesConfig where se.Attribute("name").Value.Equals(generatedEntityName) select se)
+                        .FirstOrDefault();
+
+                foreach (var nav in navigationProperties)
+                {
+
+                    if (nav.ToEndMember.RelationshipMultiplicity == RelationshipMultiplicity.Many) continue;
+                    if (!String.IsNullOrWhiteSpace(Accessibility.ForSetter(nav))) continue;
+
+                    Boolean serializable = true;
+                    if (entityConfig != null)
+                    {
+                        String propertyName = code.Escape(nav);
+                        XElement propConfig =
+                            (from se in entityConfig.Descendants("property")
+                                where se.Attribute("name").Value.Equals(propertyName)
+                                select se).FirstOrDefault();
+                        if (propConfig != null)
+                        {
+                            serializable = (propConfig.Attribute("wcf-expose").Value != "false");
+                        }
+                    }
+#>
+		if(null!=source.<#=code.Escape(nav) #>&&!Object.Equals(source.<#=code.Escape(nav) #>,target.<#=                        code.Escape(nav) #>)){
+			//target.<#=                        code.Escape(nav) #> = source.<#=                        code.Escape(nav) #>;
+			Context.Set<<#=code.Escape(nav.TypeUsage) #>>().Find(source.<#=code.Escape(nav) #>.Id);
+		}     
+<#
+                }
+#>	}
+
+	#endregion
+<#
+
+            if (navigationProperties.Count() > 0)
+            {
+#>
+
+	#region Methods
+
+	public override <#=                    code.Escape(entity) #> InsertOrUpdate(<#=                    code.Escape(entity) #> entityToAdd)
+	{
+		AttachRelatedEntities(entityToAdd);
+		base.InsertOrUpdate(entityToAdd);
+		return entityToAdd;
+	}
+
+	private void AttachRelatedEntities(<#=                    code.Escape(entity) #> entity)
+	{
+	<#
+                string generatedName = code.EscapeNamespace(namespaceName) + "." + code.Escape(entity);
+                XElement ConfigEntity =
+                    (from se in entitiesConfig where se.Attribute("name").Value.Equals(generatedName) select se)
+                        .FirstOrDefault();
+
+                foreach (var nav in navigationProperties)
+                {
+
+                    if (nav.ToEndMember.RelationshipMultiplicity == RelationshipMultiplicity.Many) continue;
+                    if (!String.IsNullOrWhiteSpace(Accessibility.ForSetter(nav))) continue;
+
+                    if (ConfigEntity != null)
+                    {
+                        String propertyName = code.Escape(nav);
+                        XElement propConfig =
+                            (from se in ConfigEntity.Descendants("property")
+                                where se.Attribute("name").Value.Equals(propertyName)
+                                select se).FirstOrDefault();
+                    }
+#>
+		if (entity != null && entity.<#=code.Escape(nav) #> != null)
+		{
+			entity.<#=code.Escape(nav) #> = Context.Set<<#=code.Escape(nav.TypeUsage) #>>().Find(entity.<#=code.Escape(nav) #>.Id);
+		}
+<#
+                }
+#>
+	}
+
+	#endregion
+<#
+            }
+#>
+}
+}
+<#
+            EndNamespace(namespaceName);
+        }
+    }
+
+    fileManager.Process();
+#>
+<#+
+void WriteHeader(EntityFrameworkTemplateFileManager fileManager,List<XElement> usingsConfig)
+{
+    //fileManager.StartHeader();
+#>
+//------------------------------------------------------------------------------
+// <auto-generated>
+//    (c)Netapsys 2012
+//    Ce code a ete genere par template T4.
+//    Ne pas le modifier manuellement !
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+<#+
+    foreach(XElement useme in usingsConfig){
+#>
+using <#=useme.Attribute("namespace").Value #>;
+<#+
+    }
+#>
+using System.Runtime.Serialization;
+using System.Xml.Linq;
+using System.Linq;
+using System.Data.Entity;
+using log4net;
+
+
+<#+
+    //fileManager.EndBlock();
+}
+
+void BeginNamespace(string namespaceName, CodeGenerationTools code)
+{
+    CodeRegion region = new CodeRegion(this);
+    if (!String.IsNullOrEmpty(namespaceName))
+    {
+#>
+namespace <#=code.EscapeNamespace(namespaceName)#>
+{
+<#+
+        PushIndent(CodeRegion.GetIndent(1));
+    }
+}
+
+void EndNamespace(string namespaceName)
+{
+    if (!String.IsNullOrEmpty(namespaceName))
+    {
+        PopIndent();
+    }
+}
+#>
+
